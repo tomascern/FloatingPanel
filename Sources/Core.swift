@@ -650,7 +650,7 @@ class Core: NSObject, UIGestureRecognizerDelegate {
         }
 
         stopScrollDeceleration = (0 > layoutAdapter.offsetFromEdgeMost + (1.0 / surfaceView.fp_displayScale)) // Projecting the dragging to the scroll dragging or not
-        if stopScrollDeceleration {
+        if false /*stopScrollDeceleration*/ {
             DispatchQueue.main.async { [weak self] in
                 guard let `self` = self else { return }
                 self.stopScrolling(at: self.initialScrollOffset)
