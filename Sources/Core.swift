@@ -539,6 +539,10 @@ class Core: NSObject, UIGestureRecognizerDelegate {
         if grabberAreaFrame.contains(point), !grabberAreaFrame.contains(initialLocation) {
             return true
         }
+        
+        if grabberAreaFrame.contains(initialLocation) {
+            return false
+        }
 
         let scrollViewFrame = scrollView.convert(scrollView.bounds, to: surfaceView)
         guard
@@ -650,7 +654,7 @@ class Core: NSObject, UIGestureRecognizerDelegate {
         }
 
         stopScrollDeceleration = (0 > layoutAdapter.offsetFromEdgeMost + (1.0 / surfaceView.fp_displayScale)) // Projecting the dragging to the scroll dragging or not
-        if false /*stopScrollDeceleration*/ {
+        if stopScrollDeceleration, state != .full {
             DispatchQueue.main.async { [weak self] in
                 guard let `self` = self else { return }
                 self.stopScrolling(at: self.initialScrollOffset)
