@@ -83,14 +83,17 @@ class ViewController: UIViewController {
     func layoutPanelForPhone() {
         fpc.track(scrollView: searchVC.tableView) // Only track the tabvle view on iPhone
         fpc.addPanel(toParent: self, animated: true)
-        fpc.setApearanceForPhone()
-        detailFpc.setApearanceForPhone()
+        fpc.setAppearanceForPhone()
+        detailFpc.setAppearanceForPhone()
     }
 }
 
 extension FloatingPanelController {
-    func setApearanceForPhone() {
+    func setAppearanceForPhone() {
         let appearance = SurfaceAppearance()
+        if #available(iOS 13.0, *) {
+            appearance.cornerCurve = .continuous
+        }
         appearance.cornerRadius = 8.0
         appearance.backgroundColor = .clear
         surfaceView.appearance = appearance
@@ -114,19 +117,27 @@ extension FloatingPanelController {
 // MARK: - UISearchBarDelegate
 
 extension ViewController: UISearchBarDelegate {
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    func activate(searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+        searchVC.showHeader(animated: true)
+        searchVC.tableView.alpha = 1.0
+        detailVC.dismiss(animated: true, completion: nil)
+    }
+    func deactivate(searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
         searchBar.showsCancelButton  = false
         searchVC.hideHeader(animated: true)
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        deactivate(searchBar: searchBar)
         UIView.animate(withDuration: 0.25) {
             self.fpc.move(to: .half, animated: false)
         }
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.showsCancelButton = true
-        searchVC.showHeader(animated: true)
-        searchVC.tableView.alpha = 1.0
+        activate(searchBar: searchBar)
         UIView.animate(withDuration: 0.25) { [weak self] in
             self?.fpc.move(to: .full, animated: false)
         }

@@ -3,6 +3,22 @@
 #import "ViewController.h"
 @import FloatingPanel;
 
+// Defining a custom FloatingPanelState
+@interface FloatingPanelState(Extended)
++ (FloatingPanelState *)LastQuart;
+@end
+
+@implementation FloatingPanelState(Extended)
+static FloatingPanelState *_lastQuart;
++ (FloatingPanelState *)LastQuart {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _lastQuart = [[FloatingPanelState alloc] initWithRawValue:@"lastquart" order:750];
+    });
+    return _lastQuart;
+}
+@end
+
 @interface ViewController()<FloatingPanelControllerDelegate>
 @end
 
@@ -59,12 +75,15 @@
 }
 - (NSDictionary<FloatingPanelState *, id<FloatingPanelLayoutAnchoring>> *)anchors {
     return @{
+        FloatingPanelState.LastQuart: [[FloatingPanelLayoutAnchor alloc] initWithFractionalInset:0.25
+                                                                                       edge:FloatingPanelReferenceEdgeTop
+                                                                             referenceGuide:FloatingPanelLayoutReferenceGuideSafeArea],
         FloatingPanelState.Half: [[FloatingPanelLayoutAnchor alloc] initWithFractionalInset:0.5
                                                                                        edge:FloatingPanelReferenceEdgeTop
-                                                                         referenceGuide:FloatingPanelLayoutReferenceGuideSafeArea],
+                                                                             referenceGuide:FloatingPanelLayoutReferenceGuideSafeArea],
         FloatingPanelState.Tip: [[FloatingPanelLayoutAnchor alloc] initWithAbsoluteInset:44.0
                                                                                     edge:FloatingPanelReferenceEdgeBottom
-                                                                         referenceGuide:FloatingPanelLayoutReferenceGuideSafeArea],
+                                                                          referenceGuide:FloatingPanelLayoutReferenceGuideSafeArea],
     };
 }
 

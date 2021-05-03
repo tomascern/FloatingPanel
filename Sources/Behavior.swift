@@ -43,44 +43,41 @@ public protocol FloatingPanelBehavior {
     /// This method allows a panel to activate the rubber band effect to a given edge of the surface view. By default, the effect is disabled.
     @objc optional
     func allowsRubberBanding(for edge: UIRectEdge) -> Bool
+    
+    /// Returns the velocity threshold for the default interactive removal gesture.
+    ///
+    /// In case `floatingPanel:shouldRemoveAt:with` is implemented, this value will not be used. The default value of `FloatingPanelDefaultBehavior` is 5.5
+    @objc optional
+    var removalInteractionVelocityThreshold: CGFloat { get }
 }
 
 /// The default behavior object for a panel
 ///
 /// This behavior object is fine-tuned to behave as a search panel(card) in Apple Maps on iPhone portrait orientation.
-public class FloatingPanelDefaultBehavior: FloatingPanelBehavior {
-    public var springDecelerationRate: CGFloat {
+open class FloatingPanelDefaultBehavior: FloatingPanelBehavior {
+    public init() {}
+
+    open var springDecelerationRate: CGFloat {
         return UIScrollView.DecelerationRate.fast.rawValue + 0.001
     }
 
-    public var springResponseTime: CGFloat {
+    open var springResponseTime: CGFloat {
         return 0.4
     }
 
-    public var momentumProjectionRate: CGFloat {
+    open var momentumProjectionRate: CGFloat {
         return UIScrollView.DecelerationRate.normal.rawValue
     }
 
-    public func redirectionalProgress(_ fpc: FloatingPanelController, from: FloatingPanelState, to: FloatingPanelState) -> CGFloat {
+    open func redirectionalProgress(_ fpc: FloatingPanelController, from: FloatingPanelState, to: FloatingPanelState) -> CGFloat {
         return 0.5
     }
 
-    func addPanelAnimator(_ fpc: FloatingPanelController, to: FloatingPanelState) -> UIViewPropertyAnimator {
-        return UIViewPropertyAnimator(duration: 0.0,
-                                      timingParameters: UISpringTimingParameters(decelerationRate: UIScrollView.DecelerationRate.fast.rawValue,
-                                                                                 frequencyResponse: 0.25))
-    }
-
-    func removePanelAnimator(_ fpc: FloatingPanelController, from: FloatingPanelState, with velocity: CGVector) -> UIViewPropertyAnimator {
-        return UIViewPropertyAnimator(duration: 0.0,
-                                      timingParameters: UISpringTimingParameters(decelerationRate: UIScrollView.DecelerationRate.fast.rawValue,
-                                                                                 frequencyResponse: 0.25,
-                                                                                 initialVelocity: velocity))
-    }
-
-    public func allowsRubberBanding(for edge: UIRectEdge) -> Bool {
+    open func allowsRubberBanding(for edge: UIRectEdge) -> Bool {
         return false
     }
+    
+    open var removalInteractionVelocityThreshold: CGFloat = 5.5
 }
 
 class BehaviorAdapter {
@@ -102,6 +99,10 @@ class BehaviorAdapter {
 
     var momentumProjectionRate: CGFloat {
         behavior.momentumProjectionRate ?? FloatingPanelDefaultBehavior().momentumProjectionRate
+    }
+    
+    var removalInteractionVelocityThreshold: CGFloat {
+        behavior.removalInteractionVelocityThreshold ?? FloatingPanelDefaultBehavior().removalInteractionVelocityThreshold
     }
 
     func redirectionalProgress(from: FloatingPanelState, to: FloatingPanelState) -> CGFloat {
