@@ -549,7 +549,7 @@ class Core: NSObject, UIGestureRecognizerDelegate {
         }
         
         // When the initial point is within grabber area and the current point is out of surface, don't scroll.
-        if grabberAreaFrame.contains(initialLocation), !surfaceView.frame.contains(point) {
+        if grabberAreaFrame.contains(initialLocation) {
             return false
         }
 
